@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
-
 import F5_FloydWarshall as fw
 
 # Fonction de création de la fenetre du programme
