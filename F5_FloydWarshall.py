@@ -22,6 +22,7 @@ def nouvelleAnalyse(window, root):
         window.destroy()
         w.create_window()
 
+
     # si non alors fermer le programme
     if choix.lower()=="n":
         print("Stop")
@@ -89,6 +90,7 @@ def floydWarshall(graphe, window, root):
     # print("\n", P)
 
     # itérations
+    print("Deroulement de l'algorithme : ")
     for k in range(int(graphe[0])):
         for i in range(int(graphe[0])):
             for j in range(int(graphe[0])):
@@ -106,3 +108,4 @@ def floydWarshall(graphe, window, root):
         print(L)
         print("\n", P)
     nouvelleAnalyse(window, root)
+    return L

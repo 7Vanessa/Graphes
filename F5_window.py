@@ -3,6 +3,9 @@ from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import F5_FloydWarshall as fw
 
+# liste des graphes deja traites
+listeGraphes = {}
+
 # Fonction de création de la fenetre du programme
 def create_window():
     # Creation d'une nouvelle fenetre qui permettra l'execution du programme
@@ -48,12 +51,26 @@ def onClick_Button(numero, window):
     root.resizable(True, True)
     root.iconbitmap("efrei_logo.ico")
 
-    # Ouverture de du fichier texte contenant la trace
-    filename = askopenfilename(parent=root, title="Ouvrir votre fichier de graphes", filetypes=[('txt files', '.txt'), ('all files', '.*')])
+    # si le graphe n'a pas encore ete traite
+    if numero not in listeGraphes:
+        # Ouverture du fichier texte contenant la trace
+        filename = askopenfilename(parent=root, title="Ouvrir votre fichier de graphes", filetypes=[('txt files', '.txt'), ('all files', '.*')])
 
-    # Recuperation du contenu du fichier texte
-    with open(filename) as file:
-        content = file.read()
+        # Recuperation du contenu du fichier texte
+        with open(filename) as file:
+            content = file.read()
+
+        # Affichage du graphe selectionné
+        new_content = content.split("g")
+
+        # Recuperation du graphe à etudier
+        my_graphe = new_content[numero]
+        my_graphe.strip() # On retire les espaces en trop au debut et à la fin du string
+        listeGraphes[numero] = my_graphe
+
+    # si le graphe est deja traite, on le recupere dans le dictionnaire listeGraphes
+    else :
+        my_graphe = listeGraphes[numero]
 
     # Creation de la frame principale
     frame = Frame(root)
@@ -77,13 +94,6 @@ def onClick_Button(numero, window):
     # L'ajouter a une fenetre dans le canvas
     my_canvas.create_window((0, 0), window=frame_trace, anchor="nw")
 
-    # Affichage du graphe selectionné
-    new_content = content.split("g")
-
-    # Recuperation du graphe à etudier
-    my_graphe = new_content[numero]
-    my_graphe.strip() # On retire les espaces en trop au debut et à la fin du string
-
     # On créer une liste avec toutes les lignes de la structure du graphe
     my_graphe = my_graphe.split()
 
@@ -91,4 +101,5 @@ def onClick_Button(numero, window):
 
     # On applique Floyd-Warshall
     fw.floydWarshall(my_graphe, window, root)
+
 
