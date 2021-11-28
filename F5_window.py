@@ -80,8 +80,6 @@ def onClick_Button(numero, window):
 
     # Affichage du graphe selectionné
     new_content = content.split("g")
-    #for i in range(len(new_content)):
-    #    new_content[i] = new_content[i].strip()
 
     # Recuperation du graphe à etudier
     my_graphe = new_content[numero]

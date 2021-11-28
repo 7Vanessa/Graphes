@@ -15,15 +15,17 @@ def nouvelleAnalyse(window, root):
     # reponse de l'utilisateur
     choix = input("Souhaitez-vous analyser un nouveau graphe ? ('o' or 'n')")
 
-    # si oui alors demande un nouveau graphe
+    # si oui alors demander un nouveau graphe
     if choix.lower()=="o":
-        print("lancer une nouvelle analyse")
-
-    # si non alors on détruit les fenetres
-    if choix.lower()=="n":
-        print("stop")
-        window.destroy()
+        print("Lancer une nouvelle analyse")
         root.destroy()
+        window.destroy()
+        w.create_window()
+
+    # si non alors fermer le programme
+    if choix.lower()=="n":
+        print("Stop")
+        exit()
 
 def listeAretesEntrantes(s, aretes):
     databin = {}
@@ -103,3 +105,4 @@ def floydWarshall(graphe, window, root):
         print("\nk = ", k)
         print(L)
         print("\n", P)
+    nouvelleAnalyse(window, root)
