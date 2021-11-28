@@ -28,7 +28,7 @@ def create_window():
     choix.pack()
 
     # Creation du bouton
-    submit_button = Button(frame, text="Valider", font=("Courrier", 20), bg='white', fg='grey', command=lambda: onClick_Button(int(choix.get())))
+    submit_button = Button(frame, text="Valider", font=("Courrier", 20), bg='white', fg='grey', command=lambda: onClick_Button(int(choix.get()), window, ))
     submit_button.pack()
 
     # Ajout de la frame a la fenetre
@@ -40,7 +40,7 @@ def create_window():
 
 # Appliquer Floyd Warshall directement dans le fichier data, sans avoir besoin d'ouvrir
 # Fonction de choix du graphe à étudier
-def onClick_Button(numero):
+def onClick_Button(numero, window):
     # Creation d'un nouvelle fenetre qui contiendra l'application de l'algorithme de Floyd Warshall
     root = Tk()
     root.title("Floyd Warshall")
@@ -93,5 +93,5 @@ def onClick_Button(numero):
     #Label(frame_trace, text=new_content[numero], bg='white', fg='black', pady=20).pack()
 
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe)
+    fw.floydWarshall(my_graphe, window, root)
 

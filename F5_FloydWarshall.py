@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import math
-
 import F5_window as w
 
 # Detection de circuit absorbant dans le graphe
@@ -12,17 +11,19 @@ def circuitAbsorbant(matrice):
     return False;
 
 # Demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
-def nouvelleAnalyse():
+def nouvelleAnalyse(window, root):
     # reponse de l'utilisateur
     choix = input("Souhaitez-vous analyser un nouveau graphe ? ('o' or 'n')")
 
-    # si oui
+    # si oui alors demande un nouveau graphe
     if choix.lower()=="o":
         print("lancer une nouvelle analyse")
 
-    # si non
+    # si non alors on détruit les fenetres
     if choix.lower()=="n":
         print("stop")
+        window.destroy()
+        root.destroy()
 
 def listeAretesEntrantes(s, aretes):
     databin = {}
@@ -63,7 +64,7 @@ def calculmatrices(s, aretes):
 # print(calculmatrices(s))
 
 
-def floydWarshall(graphe):
+def floydWarshall(graphe, window, root):
 
     # Creation d'une liste contenant toutes les aretes du graphe
     aretes = []
@@ -96,7 +97,7 @@ def floydWarshall(graphe):
                 # Detection de circuit absorbant, si oui mettre fin à l'algo et demander nouvelle analyse
                 if circuitAbsorbant(L):
                     print("Présence d'un circuit absorbant")
-                    nouvelleAnalyse()
+                    nouvelleAnalyse(window, root)
 
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
         print("\nk = ", k)
