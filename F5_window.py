@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 
+import F5_FloydWarshall as fw
+
 # Fonction de création de la fenetre du programme
 def create_window():
     # Creation d'une nouvelle fenetre qui permettra l'execution du programme
@@ -78,8 +80,18 @@ def onClick_Button(numero):
 
     # Affichage du graphe selectionné
     new_content = content.split("g")
-    for i in range(len(new_content)):
-        new_content[i] = new_content[i].strip()
+    #for i in range(len(new_content)):
+    #    new_content[i] = new_content[i].strip()
 
-    Label(frame_trace, text=new_content[numero], bg='white', fg='black', pady=20).pack()
+    # Recuperation du graphe à etudier
+    my_graphe = new_content[numero]
+    my_graphe.strip() # On retire les espaces en trop au debut et à la fin du string
+
+    # On créer une liste avec toutes les lignes de la structure du graphe
+    my_graphe = my_graphe.split()
+
+    #Label(frame_trace, text=new_content[numero], bg='white', fg='black', pady=20).pack()
+
+    # On applique Floyd-Warshall
+    fw.floydWarshall(my_graphe)
 
