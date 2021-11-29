@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.filedialog import askopenfilename
 import F5_FloydWarshall as fw
+from tkinter.filedialog import *
 
 # liste des graphes deja traites
 listeGraphes = {}
@@ -89,7 +90,7 @@ def onClick_Button(numero, window):
     my_scrollbar.pack(side=RIGHT, fill=Y)
 
     # Configurer le Canvas
-    my_canvas.configure(yscrollcommand=lambda: my_scrollbar.set())
+    my_canvas.configure(yscrollcommand=lambda x, y: my_scrollbar.set(x, y))
     my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
 
     # Creation d'une frame à l'interieur de la frame principale
@@ -102,7 +103,7 @@ def onClick_Button(numero, window):
     my_graphe = my_graphe.split()
 
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe, window, root, frame_trace)
+    fw.floydWarshall(my_graphe, root, frame_trace)
 
     root.mainloop()
 

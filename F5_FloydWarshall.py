@@ -3,40 +3,27 @@ import pandas as pd
 import math
 import F5_window as w
 from tkinter import *
-
-# Detection de circuit absorbant dans le graphe
-def circuitAbsorbant(matrice):
-    for i in range(len(matrice)):
-        if matrice[i][i]<0:
-            return True;
-    return False;
+from tkinter import messagebox
 
 # Demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
-def nouvelleAnalyse(window, root):
-    # reponse de l'utilisateur
-    """choix = input("Souhaitez-vous analyser un nouveau graphe ? ('o' or 'n')")
-
-    # si oui alors demander un nouveau graphe
-    if choix.lower()=="o":
-        print("Lancer une nouvelle analyse")
+def nouvelleAnalyse(root):
+    res = messagebox.askquestion("Choix", "Souhaitez-vous analyser un nouveau graphe ?", icon='question')
+    if res == 'yes':
         root.destroy()
-        window.destroy()
-        w.create_window()
-
-    # si non alors fermer le programme
-    if choix.lower()=="n":
-        print("Stop")
+    elif res == 'no':
         exit()
-    """
+    else:
+        print("ok")
 
-def listeAretesEntrantes(s, aretes):
+
+def listeAretesEntrantes(graphe, aretes):
     databin = {}
     dataval = {}
     # x = un sommet
-    for x in range(int(s[0])):
+    for x in range(int(graphe[0])):
         # print(x)
-        listematricebin = np.zeros(int(s[0]))
-        listematriceval = math.inf + np.zeros(int(s[0]))
+        listematricebin = np.zeros(int(graphe[0]))
+        listematriceval = math.inf + np.zeros(int(graphe[0]))
         # s'il n'y a pas d'arête qui lie les sommets : inf dans la matrice de valeurs
         for i in range(len(aretes)):
             if aretes[i][1] == x:
@@ -53,22 +40,22 @@ def listeAretesEntrantes(s, aretes):
 # Detection de circuit absorbant dans le graphe
 def circuitAbsorbant(matrice):
     for i in range(len(matrice)):
-        if matrice[i][i]<0:
+        if matrice[i][i] < 0:
             return True;
     return False;
 
 
-def calculmatrices(s, aretes):
-    index = np.arange(int(s[0]))
-    matricebin = pd.DataFrame(listeAretesEntrantes(s, aretes)[0], index)
-    matriceval = pd.DataFrame(listeAretesEntrantes(s, aretes)[1], index)
+def calculmatrices(graphe, aretes):
+    index = np.arange(int(graphe[0]))
+    matricebin = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[0], index)
+    matriceval = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[1], index)
     return matricebin, matriceval
 
 
 # print(calculmatrices(s))
 
 
-def floydWarshall(graphe, window, root, frame):
+def floydWarshall(graphe, root, frame):
 
     # Creation d'une liste contenant toutes les aretes du graphe
     aretes = []
@@ -90,6 +77,7 @@ def floydWarshall(graphe, window, root, frame):
     P = pd.DataFrame((listesP))
     # print("\n", P)
 
+
     # itérations
     print("Deroulement de l'algorithme : ")
     for k in range(int(graphe[0])):
@@ -98,19 +86,36 @@ def floydWarshall(graphe, window, root, frame):
                 if L[k][i] + L[j][k] < L[j][i]:
                     L[j][i] = L[k][i] + L[j][k]
                     P[j][i] = P[j][k]
-
                 # Detection de circuit absorbant, si oui mettre fin à l'algo et demander nouvelle analyse
                 if circuitAbsorbant(L):
                     print("Présence d'un circuit absorbant")
-                    # nouvelleAnalyse(window, root)
+                    nouvelleAnalyse(root)
+
+
+
+        print("\nk = ", k)
+        #print(L)
+        #print("\n", P)
+        #for i in range(len(L)):
+        #    for j in range(len(L[i])):
+        #        print("\"", str(L[i][j]), "\"")
+        #        print(type(str(L[i][j])))
+
+        Lstr = str(L)
+        #for i in range(int(graphe[0])):
+        #    for j in range(int(graphe[0])):
+        #        Lstr[i][j] = "{:>6}".format(str(L[i][j]))
+        print(Lstr)
 
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
         # Création d'un label contenant le numero de l'itération
-        iteration = "k = "+str(k)
-        label_title1 = Label(frame, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black', justify=LEFT)
+        iteration = "k = " + str(k)
+        label_title1 = Label(frame, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black',
+                                     justify=LEFT)
 
         # Création d'un label contenant le graphe des plus courts chemins
-        label_title2 = Label(frame, text=L, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
+        label_title2 = Label(frame, text=Lstr, font=("Courrier", 15), bg='white', fg='grey',
+                                     justify=LEFT, anchor=CENTER)
 
         # Création d'un label contenant le graphe des prédecesseurs
         label_title3 = Label(frame, text=P, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
@@ -120,8 +125,6 @@ def floydWarshall(graphe, window, root, frame):
         label_title2.pack()
         label_title3.pack()
 
-        print("\nk = ", k)
-        print(L)
-        print("\n", P)
-    # nouvelleAnalyse(window, root)
+
+    nouvelleAnalyse(root)
     return L
