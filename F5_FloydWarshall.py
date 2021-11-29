@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import math
 import F5_window as w
+from tkinter import *
 
 # Detection de circuit absorbant dans le graphe
 def circuitAbsorbant(matrice):
@@ -13,7 +14,7 @@ def circuitAbsorbant(matrice):
 # Demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
 def nouvelleAnalyse(window, root):
     # reponse de l'utilisateur
-    choix = input("Souhaitez-vous analyser un nouveau graphe ? ('o' or 'n')")
+    """choix = input("Souhaitez-vous analyser un nouveau graphe ? ('o' or 'n')")
 
     # si oui alors demander un nouveau graphe
     if choix.lower()=="o":
@@ -22,11 +23,11 @@ def nouvelleAnalyse(window, root):
         window.destroy()
         w.create_window()
 
-
     # si non alors fermer le programme
     if choix.lower()=="n":
         print("Stop")
         exit()
+    """
 
 def listeAretesEntrantes(s, aretes):
     databin = {}
@@ -67,7 +68,7 @@ def calculmatrices(s, aretes):
 # print(calculmatrices(s))
 
 
-def floydWarshall(graphe, window, root):
+def floydWarshall(graphe, window, root, frame):
 
     # Creation d'une liste contenant toutes les aretes du graphe
     aretes = []
@@ -101,11 +102,23 @@ def floydWarshall(graphe, window, root):
                 # Detection de circuit absorbant, si oui mettre fin à l'algo et demander nouvelle analyse
                 if circuitAbsorbant(L):
                     print("Présence d'un circuit absorbant")
-                    nouvelleAnalyse(window, root)
+                    # nouvelleAnalyse(window, root)
 
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
+            # affichage graphe dans fenetre
+        iteration = "k = "+str(k)
+        label_title1 = Label(frame, text=iteration, font=("Courrier", 7),
+                             bg='#ffeeee', fg='grey')
+        label_title2 = Label(frame, text=L, font=("Courrier", 7),
+                            bg='#ffeeee', fg='grey')
+        # affichage graphe dans fenetre
+        label_title3 = Label(frame, text=P, font=("Courrier", 7),
+                            bg='#ffeeee', fg='grey')
+        label_title1.pack()
+        label_title2.pack()
+        label_title3.pack()
         print("\nk = ", k)
         print(L)
         print("\n", P)
-    nouvelleAnalyse(window, root)
+    # nouvelleAnalyse(window, root)
     return L

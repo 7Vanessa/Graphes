@@ -74,11 +74,12 @@ def onClick_Button(numero, window):
 
     # Creation de la frame principale
     frame = Frame(root)
-    frame.pack(fill=BOTH, expand=1)
+    frame.pack()
 
     # Creation d'un canvas
-    my_canvas = Canvas(frame, bg='white')
+    my_canvas = Canvas(frame, bg='white', width=900)
     my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+
 
     # Ajout d'une barre de defilement
     my_scrollbar = Scrollbar(frame, orient=VERTICAL, command=my_canvas.yview)
@@ -100,6 +101,8 @@ def onClick_Button(numero, window):
     #Label(frame_trace, text=new_content[numero], bg='white', fg='black', pady=20).pack()
 
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe, window, root)
+    fw.floydWarshall(my_graphe, window, root, my_canvas)
+
+    root.mainloop()
 
 
