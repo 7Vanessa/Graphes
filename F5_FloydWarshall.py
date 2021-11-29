@@ -105,18 +105,21 @@ def floydWarshall(graphe, window, root, frame):
                     # nouvelleAnalyse(window, root)
 
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
-            # affichage graphe dans fenetre
+        # Création d'un label contenant le numero de l'itération
         iteration = "k = "+str(k)
-        label_title1 = Label(frame, text=iteration, font=("Courrier", 7),
-                             bg='#ffeeee', fg='grey')
-        label_title2 = Label(frame, text=L, font=("Courrier", 7),
-                            bg='#ffeeee', fg='grey')
-        # affichage graphe dans fenetre
-        label_title3 = Label(frame, text=P, font=("Courrier", 7),
-                            bg='#ffeeee', fg='grey')
+        label_title1 = Label(frame, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black', justify=LEFT)
+
+        # Création d'un label contenant le graphe des plus courts chemins
+        label_title2 = Label(frame, text=L, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
+
+        # Création d'un label contenant le graphe des prédecesseurs
+        label_title3 = Label(frame, text=P, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
+
+        # Affichage des labels dans le canvas
         label_title1.pack()
         label_title2.pack()
         label_title3.pack()
+
         print("\nk = ", k)
         print(L)
         print("\n", P)

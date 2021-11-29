@@ -76,17 +76,20 @@ def onClick_Button(numero, window):
     frame = Frame(root)
     frame.pack()
 
-    # Creation d'un canvas
-    my_canvas = Canvas(frame, bg='white', width=900)
-    my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+    # Description de la fenetre
+    titre = Label(frame, text="Matrice des plus courts chemins et matrice des prédecesseurs pour chaque itération : ", font=("Courrier", 20), bg='#ffeeee', fg='grey')
+    titre.pack()
 
+    # Creation d'un canvas
+    my_canvas = Canvas(frame, bg='white', width=300, height=500)
+    my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
     # Ajout d'une barre de defilement
     my_scrollbar = Scrollbar(frame, orient=VERTICAL, command=my_canvas.yview)
     my_scrollbar.pack(side=RIGHT, fill=Y)
 
     # Configurer le Canvas
-    my_canvas.configure(yscrollcommand=my_scrollbar.set)
+    my_canvas.configure(yscrollcommand=lambda: my_scrollbar.set())
     my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
 
     # Creation d'une frame à l'interieur de la frame principale
@@ -98,10 +101,8 @@ def onClick_Button(numero, window):
     # On créer une liste avec toutes les lignes de la structure du graphe
     my_graphe = my_graphe.split()
 
-    #Label(frame_trace, text=new_content[numero], bg='white', fg='black', pady=20).pack()
-
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe, window, root, my_canvas)
+    fw.floydWarshall(my_graphe, window, root, frame_trace)
 
     root.mainloop()
 
