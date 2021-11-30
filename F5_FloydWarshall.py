@@ -6,8 +6,11 @@ from tkinter import *
 from tkinter import messagebox
 
 # Demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
-def nouvelleAnalyse(root):
-    res = messagebox.askquestion("Choix", "Souhaitez-vous analyser un nouveau graphe ?", icon='question')
+def nouvelleAnalyse(root, presence):
+    if presence:
+        res = messagebox.askquestion("Présence d'un circuit absorbant", "Souhaitez-vous analyser un nouveau graphe ?", icon='question')
+    else:
+        res = messagebox.askquestion("Fin de l'algorithme", "Souhaitez-vous analyser un nouveau graphe ?", icon='question')
     if res == 'yes':
         root.destroy()
     elif res == 'no':
@@ -79,6 +82,8 @@ def floydWarshall(graphe, root, canvas):
 
     decalage = 0
 
+    circuit_absorbant = False
+
     # itérations
     print("Deroulement de l'algorithme : ")
     for k in range(int(graphe[0])):
@@ -89,22 +94,23 @@ def floydWarshall(graphe, root, canvas):
                     P[j][i] = P[j][k]
                 # Detection de circuit absorbant, si oui mettre fin à l'algo et demander nouvelle analyse
                 if circuitAbsorbant(L):
+                    circuit_absorbant = True
                     print("Présence d'un circuit absorbant")
-                    nouvelleAnalyse(root)
+                    nouvelleAnalyse(root, circuit_absorbant)
 
         print("\nk = ", k)
-        #print(L)
-        #print("\n", P)
+        print(L)
+        print("\n", P)
         #for i in range(len(L)):
         #    for j in range(len(L[i])):
         #        print("\"", str(L[i][j]), "\"")
         #        print(type(str(L[i][j])))
 
-        Lstr = str(L)
+        #Lstr = str(L)
         #for i in range(int(graphe[0])):
         #    for j in range(int(graphe[0])):
         #        Lstr[i][j] = "{:>6}".format(str(L[i][j]))
-        print(Lstr)
+        #print(Lstr)
 
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
         # Création d'un label contenant le numero de l'itération
@@ -130,5 +136,5 @@ def floydWarshall(graphe, root, canvas):
 
         decalage += 200
 
-    nouvelleAnalyse(root)
+    nouvelleAnalyse(root, circuit_absorbant)
     return L
