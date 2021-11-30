@@ -23,7 +23,7 @@ def create_window():
     frame = Frame(window, bg='#ffeeee')
 
     # Ajout d'un texte indiquez de choisir le graphe
-    label_title = Label(frame, text="Veuillez indiquez le numéro du graphe à étudier : ", font=("Courrier", 30), bg='#ffeeee', fg='grey')
+    label_title = Label(frame, text="Veuillez indiquer le numéro du graphe à étudier : ", font=("Courrier", 30), bg='#ffeeee', fg='grey')
     label_title.pack()
 
     # Creation de la saisie
@@ -103,7 +103,7 @@ def onClick_Button(numero, window):
     my_graphe = my_graphe.split()
 
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe, root, frame_trace)
+    fw.floydWarshall(my_graphe, root, my_canvas)
 
     root.mainloop()
 

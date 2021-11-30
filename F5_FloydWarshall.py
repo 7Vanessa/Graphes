@@ -55,7 +55,7 @@ def calculmatrices(graphe, aretes):
 # print(calculmatrices(s))
 
 
-def floydWarshall(graphe, root, frame):
+def floydWarshall(graphe, root, canvas):
 
     # Creation d'une liste contenant toutes les aretes du graphe
     aretes = []
@@ -77,6 +77,7 @@ def floydWarshall(graphe, root, frame):
     P = pd.DataFrame((listesP))
     # print("\n", P)
 
+    decalage = 0
 
     # itérations
     print("Deroulement de l'algorithme : ")
@@ -90,8 +91,6 @@ def floydWarshall(graphe, root, frame):
                 if circuitAbsorbant(L):
                     print("Présence d'un circuit absorbant")
                     nouvelleAnalyse(root)
-
-
 
         print("\nk = ", k)
         #print(L)
@@ -110,21 +109,26 @@ def floydWarshall(graphe, root, frame):
         # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
         # Création d'un label contenant le numero de l'itération
         iteration = "k = " + str(k)
-        label_title1 = Label(frame, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black',
-                                     justify=LEFT)
+        #label_title1 = Label(frame, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black',
+        #                             justify=LEFT)
 
         # Création d'un label contenant le graphe des plus courts chemins
-        label_title2 = Label(frame, text=Lstr, font=("Courrier", 15), bg='white', fg='grey',
-                                     justify=LEFT, anchor=CENTER)
+        #label_title2 = Label(frame, text=Lstr, font=("Courrier", 15), bg='white', fg='grey',
+        #                             justify=LEFT, anchor=CENTER)
 
         # Création d'un label contenant le graphe des prédecesseurs
-        label_title3 = Label(frame, text=P, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
+        #label_title3 = Label(frame, text=P, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
 
         # Affichage des labels dans le canvas
-        label_title1.pack()
-        label_title2.pack()
-        label_title3.pack()
+        #label_title1.pack()
+        #label_title2.pack()
+        #label_title3.pack()
 
+        canvas.create_text(5, decalage, text=iteration, justify=LEFT)
+        canvas.create_text(5, decalage+50, text=str(L), justify=RIGHT)
+        canvas.create_text(5, decalage+150, text=str(P), justify=RIGHT)
+
+        decalage += 200
 
     nouvelleAnalyse(root)
     return L
