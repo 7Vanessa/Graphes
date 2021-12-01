@@ -103,7 +103,7 @@ def onClick_Button(numero, window):
     my_graphe = my_graphe.split()
 
     # On applique Floyd-Warshall
-    fw.floydWarshall(my_graphe, root, my_canvas)
+    fw.floydWarshall(my_graphe, root, my_canvas, frame_trace)
 
     root.mainloop()
 
