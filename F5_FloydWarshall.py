@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 import pandas as pd
 import math
@@ -5,7 +7,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import ttk
 
-# Demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
+# demande à l'utilisateur si oui ou non il souhaite analyser un nouveau graphe
 def nouvelleAnalyse(root, presence):
     if presence:
         res = messagebox.askquestion("Présence d'un circuit absorbant", "Souhaitez-vous analyser un nouveau graphe ?", icon='question')
@@ -18,10 +20,10 @@ def nouvelleAnalyse(root, presence):
     else:
         print("ok")
 
-#Pour chaque sommet, en fonction des arêtes entrantes, on constitue 2 listes :
+# pour chaque sommet, en fonction des arêtes entrantes, on constitue 2 listes :
 #     * l'une avec des valeurs binaires : présence(1) ou non(0) d'arêtes entrantes
 #     * l'autre avec des nombres entiers naturels : nombre d'arêtes entrantes
-#A partir de ces listes on construit 2 dictionnaires qui contiendront les colonnes des 2 matrices (la matrice d'adjacence binaire et la matrice de valeurs)
+# a partir de ces listes on construit 2 dictionnaires qui contiendront les colonnes des 2 matrices (la matrice d'adjacence binaire et la matrice de valeurs)
 def listeAretesEntrantes(graphe, aretes):
     databin = {}
     dataval = {}
@@ -45,32 +47,30 @@ def listeAretesEntrantes(graphe, aretes):
         dataval[x] = listematriceval
     return databin, dataval
 
-# Detection de circuit absorbant dans le graphe
+# detection de circuit absorbant dans le graphe
 def circuitAbsorbant(matrice):
     for i in range(len(matrice)):
         if matrice[i][i] < 0:
-            return True;
-    return False;
+            return True
+    return False
 
-# A partir des dictionnaires précédemment établis on peut construire nos matrices sous forme de DataFrames
-# On utilise l'index pour retrouver les sommets à partir desquels les arêtes sortent
+# a partir des dictionnaires précédemment établis on peut construire nos matrices sous forme de DataFrames
+# on utilise l'index pour retrouver les sommets à partir desquels les arêtes sortent
 def calculmatrices(graphe, aretes):
     index = np.arange(int(graphe[0]))
     matricebin = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[0], index)
     matriceval = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[1], index)
     return matricebin, matriceval
 
-#On applique l'algorithme de Floyd Warshall
+# on applique l'algorithme de Floyd Warshall
 def floydWarshall(graphe, root, canvas, frame_trace):
 
-    # Creation d'une liste contenant toutes les aretes du graphe
+    # creation d'une liste contenant toutes les aretes du graphe
     aretes = []
     for i in range(2, len(graphe), 3):
         aretes.append((int(graphe[i]), int(graphe[i + 1]), int(graphe[i + 2])))
+    # affichage console
     print(aretes)
-
-    print("La matrice d'adjacence binaire du graphe est: \n", calculmatrices(graphe, aretes)[0], "\n")
-    print("La matrice de valeurs du graphe est: \n", calculmatrices(graphe, aretes)[1], "\n")
 
     # initialisation matrice L
     L = calculmatrices(graphe, aretes)[1]
@@ -82,11 +82,78 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         listesP.append(l)
     P = pd.DataFrame((listesP))
 
+    # initialisation de la matrice d'adjacence
+    A = calculmatrices(graphe, aretes)[0]
+
     # variable booleene de detection de circuit absorbant
     circuit_absorbant = False
 
-    # itérations
+    # affichage console
     print("Deroulement de l'algorithme : ")
+    print("La matrice d'adjacence binaire du graphe est: \n", calculmatrices(graphe, aretes)[0], "\n")
+    print("La matrice de valeurs du graphe est: \n", calculmatrices(graphe, aretes)[1], "\n")
+
+    # initialisation de l'affichage des matrices d'adjacence et de valeurs
+    adj = ttk.Treeview(frame_trace)
+    vals = ttk.Treeview(frame_trace)
+
+    # ajout d'une case vide a l'indice 0 pour que les indices des lignes ne se retouvent pas dans la colonne d'indice 0
+    listeSommets = [" "]
+
+    # on recupere la liste contenant les indices (sommets du graphe)
+    for i in range(int(graphe[0])):
+        listeSommets.append(str(i))
+
+    # on convertit les colonnes en ligne pour pouvoir l'utiliser dans 'insert'
+    adjTrans = A.transpose()
+    valsTrans = L.transpose()
+
+    # on convertit en tuple car 'insert' ne prend que des tuples
+    adj["columns"] = tuple(listeSommets)
+    vals["columns"] = tuple(listeSommets)
+
+    # configuration du Treeview
+    adj.column("#0", width=0, stretch=NO)
+    adj.heading("#0", text="", anchor=CENTER)
+    vals.column("#0", width=0, stretch=NO)
+    vals.heading("#0", text="", anchor=CENTER)
+
+    # creation des colonnes avec leur entete
+    for i in range(len(listeSommets)):
+        adj.column(str(listeSommets[i]), anchor=CENTER, width=50)
+        adj.heading(str(listeSommets[i]), text=str(listeSommets[i]), anchor=CENTER)
+        vals.column(str(listeSommets[i]), anchor=CENTER, width=50)
+        vals.heading(str(listeSommets[i]), text=str(listeSommets[i]), anchor=CENTER)
+
+    # insertion de chaque ligne de la matrice
+    # conversion d'une ligne de type 'Series' en 'List' pour pouvoir y inserer l'indice de chaque ligne de la matrice
+    for i in range(len(listeSommets) - 1):
+        rowL = adjTrans[i].values.tolist()
+        rowL.insert(0, i)
+        adj.insert(parent='', index='end', text='',
+                       values=tuple(rowL))
+        rowA = valsTrans[i].values.tolist()
+        rowA.insert(0, i)
+        vals.insert(parent='', index='end', text='',
+                       values=tuple(rowA))
+
+    # affichage du label de la matrice d'adjacence
+    label_adj = Label(frame_trace, text="La matrice d'adjacence binaire du graphe est: \n", font=("Courrier", 15),
+                      bg='#ffeeee', fg='black',
+                      justify=LEFT)
+    label_adj.pack()
+
+    # affichage de la matrice d'adjacence
+    adj.pack()
+
+    # affichage du label de la matrice de valeurs
+    label_vals = Label(frame_trace, text="La matrice de valeurs du graphe est: \n", font=("Courrier", 15),
+                           bg='#ffeeee', fg='black',
+                           justify=LEFT)
+    label_vals.pack()
+
+    # affichage de la matrice de valeurs
+    vals.pack()
 
     # pour chaque sommet k...
     for k in range(int(graphe[0])):
@@ -123,7 +190,7 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         listeSommets = [" "]
 
         # on recupere la liste contenant les indices (sommets du graphe)
-        for i in range(int(graphe[0])) :
+        for i in range(int(graphe[0])):
             listeSommets.append(str(i))
 
         # on convertit en tuple car 'insert' ne prend que des tuples
@@ -137,7 +204,7 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         my_tabP.heading("#0", text="", anchor=CENTER)
 
         # creation des colonnes avec leur entete
-        for i in range(len(listeSommets)) :
+        for i in range(len(listeSommets)):
             my_tabL.column(str(listeSommets[i]), anchor=CENTER, width=50)
             my_tabL.heading(str(listeSommets[i]), text=str(listeSommets[i]), anchor=CENTER)
             my_tabP.column(str(listeSommets[i]), anchor=CENTER, width=50)
@@ -145,7 +212,7 @@ def floydWarshall(graphe, root, canvas, frame_trace):
 
         # insertion de chaque ligne de la matrice
         # conversion d'une ligne de type 'Series' en 'List' pour pouvoir y inserer l'indice de chaque ligne de la matrice
-        for i in range(len(listeSommets)-1) :
+        for i in range(len(listeSommets)-1):
             rowL = Ltrans[i].values.tolist()
             rowL.insert(0, i)
             my_tabL.insert(parent='', index='end', text='',
@@ -171,14 +238,13 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         # affichage de P
         my_tabP.pack()
 
+        # affichage console
         print("\nk = ", k)
         print(L)
         print("\n", P)
 
-        # detection d'un circuit absorbant
+        # affichage d'un circuit absorbant
         if(circuit_absorbant) :
             print("Présence d'un circuit absorbant")
-            nouvelleAnalyse(root, circuit_absorbant)
 
-    nouvelleAnalyse(root, circuit_absorbant)
-    return L
+    return circuit_absorbant
