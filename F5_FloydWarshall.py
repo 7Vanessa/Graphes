@@ -62,8 +62,30 @@ def calculmatrices(graphe, aretes):
     matriceval = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[1], index)
     return matricebin, matriceval
 
+def chemin(root, P, depart, arrivee) :
+    listChemin = []
+    listChemin.append(arrivee)
+    predCourant = int(P[arrivee][depart])
+    listChemin.append(predCourant)
+
+    while(predCourant != depart) :
+        predCourant = int(P[predCourant][depart])
+        listChemin.append(predCourant)
+
+
+    cheminReversed = []
+    for i in range(len(listChemin)):
+        cheminReversed.append(listChemin.pop())
+
+    label_chemin = Label(root, text=str(cheminReversed), font=("Courrier", 30),
+                         bg='#ffeeee', fg='black',
+                         justify=RIGHT)
+    label_chemin.pack()
+
+    return cheminReversed
+
 # on applique l'algorithme de Floyd Warshall
-def floydWarshall(graphe, root, canvas, frame_trace):
+def floydWarshall(root, graphe, frame_trace):
 
     # creation d'une liste contenant toutes les aretes du graphe
     aretes = []
@@ -246,5 +268,26 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         # affichage d'un circuit absorbant
         if(circuit_absorbant) :
             print("Présence d'un circuit absorbant")
+
+    if(not circuit_absorbant) :
+        label_depart = Label(frame_trace, text="Sommet de depart ? \n", font=("Courrier", 15),
+                            bg='#ffeeee', fg='black',
+                                 justify=LEFT)
+        label_depart.pack()
+
+        depart = Entry(frame_trace, relief='raised', font=("Courrier", 20), justify="center")
+        depart.pack()
+
+        label_arrivee = Label(frame_trace, text="Sommet d'arrivee ? \n", font=("Courrier", 15),
+                                bg='#ffeeee', fg='black',
+                                justify=LEFT)
+        label_arrivee.pack()
+
+        arrivee = Entry(frame_trace, relief='raised', font=("Courrier", 20), justify="center")
+        arrivee.pack()
+
+        button = Button(frame_trace, text="VALIDER", font=("Courrier", 20), bg='white', fg='grey',
+                                   command=lambda: chemin(root, P, int(depart.get()), int(arrivee.get())))
+        button.pack()
 
     return circuit_absorbant
