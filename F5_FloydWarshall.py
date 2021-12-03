@@ -290,4 +290,10 @@ def floydWarshall(root, graphe, frame_trace):
                                    command=lambda: chemin(root, P, int(depart.get()), int(arrivee.get())))
         button.pack()
 
+    else :
+        label_circuit_abs = Label(root, text="PRESENCE D'UN CIRCUIT ABSORBANT !", font=("Courrier", 30),
+                                  bg='#ffeeee', fg='red')
+        label_circuit_abs.pack()
+    nouvelleAnalyse(root, circuit_absorbant)
+
     return circuit_absorbant

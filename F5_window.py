@@ -101,9 +101,5 @@ def onClick_Button(numero, window):
     my_graphe = my_graphe.split()
 
     # On applique Floyd-Warshall
-    if(fw.floydWarshall(root, my_graphe, frame_trace)) :
-        label_circuit_abs = Label(root, text="PRESENCE D'UN CIRCUIT ABSORBANT !", font=("Courrier", 30),
-                              bg='#ffeeee', fg='red')
-        label_circuit_abs.pack()
-
+    fw.floydWarshall(root, my_graphe, frame_trace)
     root.mainloop()
