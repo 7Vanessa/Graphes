@@ -18,24 +18,29 @@ def nouvelleAnalyse(root, presence):
     else:
         print("ok")
 
-
+#Pour chaque sommet, en fonction des arêtes entrantes, on constitue 2 listes :
+#     * l'une avec des valeurs binaires : présence(1) ou non(0) d'arêtes entrantes
+#     * l'autre avec des nombres entiers naturels : nombre d'arêtes entrantes
+#A partir de ces listes on construit 2 dictionnaires qui contiendront les colonnes des 2 matrices (la matrice d'adjacence binaire et la matrice de valeurs)
 def listeAretesEntrantes(graphe, aretes):
     databin = {}
     dataval = {}
-    # x = un sommet
+
+    # x est un sommet
     for x in range(int(graphe[0])):
-        # print(x)
         listematricebin = np.zeros(int(graphe[0]))
-        listematriceval = math.inf + np.zeros(int(graphe[0]))
+
         # s'il n'y a pas d'arête qui lie les sommets : inf dans la matrice de valeurs
+        listematriceval = math.inf + np.zeros(int(graphe[0]))
+
         for i in range(len(aretes)):
             if aretes[i][1] == x:
                 listematricebin[aretes[i][0]] = 1
                 listematriceval[aretes[i][0]] = aretes[i][2]
             if((aretes[i][1] == x) and (aretes[i][0] == x)) == False:
                 listematriceval[x] = 0
-        # print (x)
-        # print(listematriceval)
+
+        # on stock ces listes (valeur), et leur sommet correspondant (indice) dans 2 dictionnaires
         databin[x] = listematricebin
         dataval[x] = listematriceval
     return databin, dataval
@@ -47,17 +52,15 @@ def circuitAbsorbant(matrice):
             return True;
     return False;
 
-
+# A partir des dictionnaires précédemment établis on peut construire nos matrices sous forme de DataFrames
+# On utilise l'index pour retrouver les sommets à partir desquels les arêtes sortent
 def calculmatrices(graphe, aretes):
     index = np.arange(int(graphe[0]))
     matricebin = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[0], index)
     matriceval = pd.DataFrame(listeAretesEntrantes(graphe, aretes)[1], index)
     return matricebin, matriceval
 
-
-# print(calculmatrices(s))
-
-
+#On applique l'algorithme de Floyd Warshall
 def floydWarshall(graphe, root, canvas, frame_trace):
 
     # Creation d'une liste contenant toutes les aretes du graphe
@@ -69,43 +72,40 @@ def floydWarshall(graphe, root, canvas, frame_trace):
     print("La matrice d'adjacence binaire du graphe est: \n", calculmatrices(graphe, aretes)[0], "\n")
     print("La matrice de valeurs du graphe est: \n", calculmatrices(graphe, aretes)[1], "\n")
 
-    # initialisation
+    # initialisation matrice L
     L = calculmatrices(graphe, aretes)[1]
-    # L = pd.DataFrame((listesAretesEntrantes))
-    # print("\n", L)
     listesP = []
+
+    # initialisation matrice P
     for x in range(int(graphe[0])):
         l = x * np.ones(int(graphe[0]))
         listesP.append(l)
     P = pd.DataFrame((listesP))
-    # print("\n", P)
 
-    decalage = 0
-
+    # variable booleene de detection de circuit absorbant
     circuit_absorbant = False
 
     # itérations
     print("Deroulement de l'algorithme : ")
+
+    # pour chaque sommet k...
     for k in range(int(graphe[0])):
+        # ... on vérifie si jusqu'à un sommet i...
         for i in range(int(graphe[0])):
             for j in range(int(graphe[0])):
+                # le chemin courant à partir d'un sommet j en passant par k juste avant i est plus court que le chemin courant de j à i dans le tableau
+                # si c'est le cas, on met le coût de ce chemin dans la matrice L
+                # et k devient le prédecesseur de i dans P, soit la matrice des prédecesseurs dans les plus courts chemins connus jusqu'à l'itération k
                 if L[k][i] + L[j][k] < L[j][i]:
                     L[j][i] = L[k][i] + L[j][k]
                     P[j][i] = P[j][k]
                 # Detection de circuit absorbant, si oui mettre fin à l'algo et demander nouvelle analyse
                 if circuitAbsorbant(L):
                     circuit_absorbant = True
-                    print("Présence d'un circuit absorbant")
-                    nouvelleAnalyse(root, circuit_absorbant)
+                    L[j][i] = L[k][i] + L[j][k]
+                    P[j][i] = P[j][k]
 
-        print("\nk = ", k)
-        print(L)
-        print("\n", P)
-        #for i in range(len(L)):
-        #    for j in range(len(L[i])):
-        #        print("\"", str(L[i][j]), "\"")
-        #        print(type(str(L[i][j])))
-
+        # affichage du numero d'iteration
         iteration = "k = " + str(k)
         label_iteration = Label(frame_trace, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black',
                              justify=LEFT)
@@ -171,35 +171,14 @@ def floydWarshall(graphe, root, canvas, frame_trace):
         # affichage de P
         my_tabP.pack()
 
-        #Lstr = str(L)
-        #for i in range(int(graphe[0])):
-        #    for j in range(int(graphe[0])):
-        #        Lstr[i][j] = "{:>6}".format(str(L[i][j]))
-        #print(Lstr)
+        print("\nk = ", k)
+        print(L)
+        print("\n", P)
 
-        # Affichage de la matrice des plus courts chemins et de la matrice des predecesseurs pour chaque itération
-        # Création d'un label contenant le numero de l'itération
-        #iteration = "k = " + str(k)
-        #label_title1 = Label(frame_trace, text=iteration, font=("Courrier", 15), bg='#ffeeee', fg='black',
-        #                             justify=LEFT)
-
-        # Création d'un label contenant le graphe des plus courts chemins
-        #label_title2 = Label(frame, text=Lstr, font=("Courrier", 15), bg='white', fg='grey',
-        #                             justify=LEFT, anchor=CENTER)
-
-        # Création d'un label contenant le graphe des prédecesseurs
-        #label_title3 = Label(frame, text=P, font=("Courrier", 15), bg='white', fg='grey', justify=LEFT)
-
-        # Affichage des labels dans le canvas
-        #label_title1.pack()
-        #label_title2.pack()
-        #label_title3.pack()
-
-        #canvas.create_text(5, decalage, text=iteration, justify=LEFT)
-        #canvas.create_text(5, decalage+50, text=str(L), justify=RIGHT)
-        #canvas.create_text(5, decalage+150, text=str(P), justify=RIGHT)
-
-        #decalage += 200
+        # detection d'un circuit absorbant
+        if(circuit_absorbant) :
+            print("Présence d'un circuit absorbant")
+            nouvelleAnalyse(root, circuit_absorbant)
 
     nouvelleAnalyse(root, circuit_absorbant)
     return L
